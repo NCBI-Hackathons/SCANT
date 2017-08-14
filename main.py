@@ -11,7 +11,7 @@ class HiSat2GFFComp:
         self.outfile = outfile
 
     def run(self):
-        cmd = f'hisat2 -p {self.p} -x {self.genome} --sra-acc {self.sra_acc} | samtools view -Sb - > {self.outfile}'
+        cmd = 'hisat2 -p {} -x {} --sra-acc {} | samtools view -Sb - > {}'.format(self.p, self.genome, self.sra_acc, self.outfile)
         sp.run(cmd.split())
 
 if __name__ == '__main__':
