@@ -7,7 +7,7 @@ import subprocess as sp
 import requests
 import re
 
-def count(stringtie_file='stringtie_file.gtf', abundance='abundance.tab', multi_map_frac='.95', outdir='', p='4'):
+def count(ref, stringtie_file='stringtie_file.gtf', abundance='abundance.tab', multi_map_frac='.95', outdir='', p='4'):
     """Parse arguments for running Stringtie
     """
     stringtie_file = os.path.join(outdir, stringtie_file)
@@ -21,7 +21,7 @@ def count(stringtie_file='stringtie_file.gtf', abundance='abundance.tab', multi_
     cmd += ['-o', stringtie_file, '-M', multi_map_frac, bam]
     sp.run(cmd)
 
-def align(genome, sra_acc, ref, p='4', outdir='', bam='hisat.sorted.bam', novel_splicesite_outfile='splicesite.tab'):
+def align(genome, sra_acc, p='4', outdir='', bam='hisat.sorted.bam', novel_splicesite_outfile='splicesite.tab'):
     """Parse arguments for running Hisat2
     """
     novel_splicesite_outfile = os.path.join(outdir, novel_splicesite_outfile)
@@ -53,7 +53,7 @@ def download_project(query):
 
     return srr_set
 
-def run_all(genome, srr_set, ref, p='4', outdir='', bam='hisat.sorted.bam',
+def run_all(genome, srr_set, ref='', p='4', outdir='', bam='hisat.sorted.bam',
             novel_splicesite_outfile='splicesite.tab', stringtie_file='stringtie_file.gtf',
             abundance='abundance.tab', multi_map_frac='.95'):
     """Align and count each of a set of SRR numbers
@@ -65,13 +65,13 @@ def run_all(genome, srr_set, ref, p='4', outdir='', bam='hisat.sorted.bam',
         sra_acc = sra_acc.strip()
         align(genome,
               sra_acc,
-              ref,
               p,
               outdir,
               '{}_{}'.format(sra_acc, bam),
               '{}_{}'.format(sra_acc, novel_splicesite_outfile)
               )
-        count('{}_{}'.format(sra_acc, stringtie_file),
+        count(ref,
+              '{}_{}'.format(sra_acc, stringtie_file),
               '{}_{}'.format(sra_acc, abundance),
               multi_map_frac,
               outdir,
