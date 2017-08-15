@@ -27,7 +27,7 @@ if [ $n_pair_ended -gt 0 ]; then
   echo "Paired end .bam"
   macs2 callpeak --keep-dup all --nomodel -f BAMPE -B --SPMR -t $bam  --name $prefix --outdir $outdir 2>&1 | tee $logfn
 else
-  echo "Sigle end .bam"
+  echo "Single end .bam"
   macs2 callpeak --keep-dup all --nomodel -f BAM -B --SPMR -t $bam  --name $prefix --outdir $outdir  2>&1 | tee $logfn
 
 fi
