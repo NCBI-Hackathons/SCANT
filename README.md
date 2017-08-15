@@ -47,19 +47,18 @@ optional arguments:
   -m MULTI_MAP_FRAC, --multi_map_frac MULTI_MAP_FRAC
                         Set stringtie -M parameter (default: .95)
 ```
-main.py -acc <SRA_accession>
-
 ## Examples
+main.py --sra_acc <SRR_accession> /path/to/HISAT2_index_files
 
 ## Output explanation
 
 ## Limitations/To-do
 
 ## People/Team
-Ashis Saha <ashis@jhu.edu>
-Michael Chambers <michael.chambers2@nih.gov>
-Allissa Dillman <allissa.dillman@gmail.com>
-Jessime Kirk <jessime@email.unc.edu>
-Sara Kimiko Suzuki <sksuzuki@ad.unc.edu>
-Wes Crouse <wcrouse@email.unc.edu>
-Vamsi Kodali <vkkodali@gmail.com>
+* Ashis Saha <ashis@jhu.edu>
+* Michael Chambers <michael.chambers2@nih.gov>
+* Allissa Dillman <allissa.dillman@gmail.com>
+* Jessime Kirk <jessime@email.unc.edu>
+* Sara Kimiko Suzuki <sksuzuki@ad.unc.edu>
+* Wes Crouse <wcrouse@email.unc.edu>
+* Vamsi Kodali <vkkodali@gmail.com>
