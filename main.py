@@ -7,7 +7,7 @@ import subprocess as sp
 import requests
 import re
 
-def count(stringtie_file='stringtie_file.gtf', abundance='abundance.tab', multi_map_frac='.95', outdir=''):
+def count(stringtie_file='stringtie_file.gtf', abundance='abundance.tab', multi_map_frac='.95', outdir='', p='4'):
     """Parse arguments for running Stringtie
     """
     stringtie_file = os.path.join(outdir, stringtie_file)
@@ -74,7 +74,8 @@ def run_all(genome, srr_set, ref, p='4', outdir='', bam='hisat.sorted.bam',
         count('{}_{}'.format(sra_acc, stringtie_file),
               '{}_{}'.format(sra_acc, abundance),
               multi_map_frac,
-              outdir
+              outdir,
+              p
               )
 
 def run(args):
@@ -96,8 +97,8 @@ def run(args):
               args.novel_splicesite_outfile)
         count(args.stringtie_file,
               args.abundance,
-              args.multi_map_frac
-              )
+              args.multi_map_frac,
+              p)
         return
 
     elif args.sra_acc: #project id (PRJNA)
