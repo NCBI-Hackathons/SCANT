@@ -11,12 +11,13 @@ def run(genome, sra_acc, ref, p='4', outdir='', bam='hisat.sorted.bam',
     stringtie_file = os.path.join(outdir, stringtie_file)
     abundance = os.path.join(outdir, abundance)
 
-    print([p, genome, sra_acc, novel_splicesite_outfile, bam])
-    print([p, ref, stringtie_file, abundance, multi_map_frac, bam])
+    print('Running Hisat2\n', [p, genome, sra_acc, novel_splicesite_outfile, bam])
     print('\n\n')
 
     cmd = ['./hisat.sh'] + [p, genome, sra_acc, novel_splicesite_outfile, bam]
     sp.run(cmd)
+
+    print('Running Stringtie\n', [p, ref, stringtie_file, abundance, multi_map_frac, bam])
     cmd = ['stringtie']
     if p: cmd.extend(['-p', p])
     if ref: cmd.extend(['-G', ref])
@@ -27,8 +28,8 @@ def run(genome, sra_acc, ref, p='4', outdir='', bam='hisat.sorted.bam',
 def run_all(genome, srr_file, ref, p='4', outdir='', bam='hisat.sorted.bam',
             novel_splicesite_outfile='splicesite.tab', stringtie_file='stringtie_file.gtf',
             abundance='abundance.tab', multi_map_frac='.95'):
-    with open(srr_file) as srr:
-        for sra_acc in srr:
+    with open(srr_file) as srr_file:
+        for sra_acc in srr_file:
             sra_acc = sra_acc.strip()
             run(genome,
                 sra_acc,
@@ -41,7 +42,6 @@ def run_all(genome, srr_file, ref, p='4', outdir='', bam='hisat.sorted.bam',
                 '{}_{}'.format(sra_acc, abundance),
                 multi_map_frac)
 
-1
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__,
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
