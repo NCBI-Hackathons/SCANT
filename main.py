@@ -7,11 +7,9 @@ import subprocess as sp
 import requests
 import re
 
-def count(novel_splicesite_outfile='splicesite.tab', stringtie_file='stringtie_file.gtf',
-          abundance='abundance.tab', multi_map_frac='.95', outdir=''):
+def count(stringtie_file='stringtie_file.gtf', abundance='abundance.tab', multi_map_frac='.95', outdir=''):
     """Parse arguments for running Stringtie
     """
-    novel_splicesite_outfile = os.path.join(outdir, novel_splicesite_outfile)
     stringtie_file = os.path.join(outdir, stringtie_file)
     abundance = os.path.join(outdir, abundance)
     print('Running Stringtie\n', [p, ref, stringtie_file, abundance, multi_map_frac, bam])
@@ -23,9 +21,10 @@ def count(novel_splicesite_outfile='splicesite.tab', stringtie_file='stringtie_f
     cmd += ['-o', stringtie_file, '-M', multi_map_frac, bam]
     sp.run(cmd)
 
-def align(genome, sra_acc, ref, p='4', outdir='', bam='hisat.sorted.bam'):
+def align(genome, sra_acc, ref, p='4', outdir='', bam='hisat.sorted.bam', novel_splicesite_outfile='splicesite.tab'):
     """Parse arguments for running Hisat2
     """
+    novel_splicesite_outfile = os.path.join(outdir, novel_splicesite_outfile)
     bam = os.path.join(outdir, bam)
     print('Running Hisat2\n', [p, genome, sra_acc, novel_splicesite_outfile, bam])
     cmd = ['./hisat.sh'] + [p, genome, sra_acc, novel_splicesite_outfile, bam]
@@ -69,10 +68,9 @@ def run_all(genome, srr_set, ref, p='4', outdir='', bam='hisat.sorted.bam',
               ref,
               p,
               outdir,
-              '{}_{}'.format(sra_acc, bam)
-              )
-        count('{}_{}'.format(sra_acc, novel_splicesite_outfile),
-              '{}_{}'.format(sra_acc, stringtie_file),
+              '{}_{}'.format(sra_acc, bam),
+              '{}_{}'.format(sra_acc, novel_splicesite_outfile)
+        count('{}_{}'.format(sra_acc, stringtie_file),
               '{}_{}'.format(sra_acc, abundance),
               multi_map_frac,
               outdir
@@ -93,10 +91,9 @@ def run(args):
               args.reference,
               args.processes,
               args.outdir,
-              args.bam
-              )
-        count(args.novel_splicesite_outfile,
-              args.stringtie_file,
+              args.bam,
+              args.novel_splicesite_outfile)
+        count(args.stringtie_file,
               args.abundance,
               args.multi_map_frac
               )
