@@ -88,16 +88,18 @@ def run(args):
         print('You must use either --sra_acc or --file')
         sys.exit()
     elif single_srr:
-        run(args.genome,
-            args.sra_acc,
-            args.reference,
-            args.processes,
-            args.outdir,
-            args.bam,
-            args.novel_splicesite_outfile,
-            args.stringtie_file,
-            args.abundance,
-            args.multi_map_frac)
+        align(args.genome,
+              args.sra_acc,
+              args.reference,
+              args.processes,
+              args.outdir,
+              args.bam
+              )
+        count(args.novel_splicesite_outfile,
+              args.stringtie_file,
+              args.abundance,
+              args.multi_map_frac
+              )
         return
 
     elif args.sra_acc: #project id (PRJNA)
