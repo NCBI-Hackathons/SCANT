@@ -20,7 +20,7 @@ def run(genome, sra_acc, ref, p='4', outdir='', bam='hisat.sorted.bam',
     cmd = ['./stringtie.sh'] + [p, ref, stringtie_file, abundance, multi_map_frac, bam]
     sp.run(cmd)
 
-def run_all(genome, sra_file, ref, p='4', outdir='', bam='hisat.sorted.bam',
+def run_all(genome, srr_file, ref, p='4', outdir='', bam='hisat.sorted.bam',
             novel_splicesite_outfile='splicesite.tab', stringtie_file='stringtie_file.gtf',
             abundance='abundance.tab', multi_map_frac='.95'):
     with open(srr_file) as srr:
