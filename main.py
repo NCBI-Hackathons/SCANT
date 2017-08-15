@@ -12,6 +12,7 @@ def count(bam='hisat.sorted.bam', ref='', stringtie_file='stringtie_file.gtf', a
     """
     stringtie_file = os.path.join(outdir, stringtie_file)
     abundance = os.path.join(outdir, abundance)
+    bam = os.path.join(outdir, bam)
     print('Running Stringtie\n', [p, ref, stringtie_file, abundance, multi_map_frac, bam])
     print('\n\n')
     cmd = ['stringtie']
@@ -100,6 +101,7 @@ def run(args):
               args.stringtie_file,
               args.abundance,
               args.multi_map_frac,
+              args.outdir,
               args.processes)
         return
 
