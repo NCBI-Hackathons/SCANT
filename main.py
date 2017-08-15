@@ -12,6 +12,9 @@ def run(genome=None, sra_acc=None, ref=None, p='4', outdir='', bam='hisat.bam',
     stringtie_file = os.path.join(outdir, stringtie_file)
     abundance = os.path.join(outdir, abundance)
 
+    print([p, genome, sra_acc, novel_splicesite_outfile, bam])
+    print('\n\n')
+    print([p, ref, stringtie_file, abundance, multi_map_frac, bam])
     cmd = ['./hisat.sh'] + [p, genome, sra_acc, novel_splicesite_outfile, bam]
     sp.run(cmd)
     cmd = ['./stringtie.sh'] + [p, ref, stringtie_file, abundance, multi_map_frac, bam]
@@ -25,9 +28,9 @@ if __name__ == '__main__':
     parser.add_argument('reference', help='Path to reference .gtf file')
     parser.add_argument('-p', '--processes', default='4', help='number of cores to use in run')
     parser.add_argument('-o', '--outdir', default='', help='name of directory to save everything to')
-    parser.add_argument('-b', '--bam', default='', help='name of hisat2 output bam file')
-    parser.add_argument('-nso', '--novel_splicesite_outfile', default='', help='Set stringtie novel_splicesite_outfile parameter')
-    parser.add_argument('-sf', '--stringtie_file', default='', help='name of stringtie output gtf file')
+    parser.add_argument('-b', '--bam', default='hisat.bam', help='name of hisat2 output bam file')
+    parser.add_argument('-nso', '--novel_splicesite_outfile', default='splicesite.tab', help='Set stringtie novel_splicesite_outfile parameter')
+    parser.add_argument('-sf', '--stringtie_file', default='stringtie_file.gtf', help='name of stringtie output gtf file')
     parser.add_argument('-a', '--abundance', default='', help='Set stringtie -A parameter')
     parser.add_argument('-m', '--multi_map_frac', default='.95', help='Set stringtie -M parameter')
 
