@@ -47,7 +47,7 @@ if __name__ == '__main__':
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('genome', help='full path of genome file')
     parser.add_argument('sra_acc', help='SRA Run number (or a file of numbers if --all is passed)')
-    parser.add_argument('reference', help='Path to reference .gtf file')
+    parser.add_argument('-r', '--reference', default='', help='Path to reference .gtf file')
     parser.add_argument('-p', '--processes', default='4', help='number of cores to use in run')
     parser.add_argument('-o', '--outdir', default='', help='name of directory to save everything to')
     parser.add_argument('-b', '--bam', default='hisat.sorted.bam', help='name of hisat2 output bam file')
