@@ -98,7 +98,7 @@ def run(args):
         count(args.stringtie_file,
               args.abundance,
               args.multi_map_frac,
-              p)
+              args.processes)
         return
 
     elif args.sra_acc: #project id (PRJNA)
