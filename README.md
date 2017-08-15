@@ -7,13 +7,47 @@ The analysis of single cell RNA-Seq data involves the use of a disparate set of 
 
 ## Dependencies
 The pipeline expects the following packages are installed and available in the PATH:
-* HISAT2 (version )
-* StringTie2 (version )
-* Python (version )
-* ...
+* Python (version 3.5 or above)
+* HISAT2 (version 2.1.0)
+* StringTie (version 1.3.3b)
+* Samtools (version 1.3.1)
 
 ## Usage
-main.py -acc <SRA_accession> -output
+```
+usage: main.py [-h] [--sra_acc SRA_ACC] [--file FILE] [-r REFERENCE]
+               [-p PROCESSES] [-o OUTDIR] [-b BAM]
+               [-nso NOVEL_SPLICESITE_OUTFILE] [-sf STRINGTIE_FILE]
+               [-a ABUNDANCE] [-m MULTI_MAP_FRAC]
+               genome
+
+positional arguments:
+  genome                path of genome file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --sra_acc SRA_ACC     SRR or PRJNA number (default: )
+  --file FILE           path to a file with newline separated SRR numbers
+                        (default: )
+  -r REFERENCE, --reference REFERENCE
+                        path to reference .gtf file (default: )
+  -p PROCESSES, --processes PROCESSES
+                        number of cores to use in run (default: 4)
+  -o OUTDIR, --outdir OUTDIR
+                        name of directory to save everything to (default: )
+  -b BAM, --bam BAM     name of hisat2 output bam file (default:
+                        hisat.sorted.bam)
+  -nso NOVEL_SPLICESITE_OUTFILE, --novel_splicesite_outfile NOVEL_SPLICESITE_OUTFILE
+                        Set stringtie novel_splicesite_outfile parameter
+                        (default: splicesite.tab)
+  -sf STRINGTIE_FILE, --stringtie_file STRINGTIE_FILE
+                        name of stringtie output gtf file (default:
+                        stringtie_file.gtf)
+  -a ABUNDANCE, --abundance ABUNDANCE
+                        Set stringtie -A parameter (default: abundance.tab)
+  -m MULTI_MAP_FRAC, --multi_map_frac MULTI_MAP_FRAC
+                        Set stringtie -M parameter (default: .95)
+```
+main.py -acc <SRA_accession>
 
 ## Examples
 
