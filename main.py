@@ -35,7 +35,7 @@ def run_all(genome, srr_file, ref, p='4', outdir='', bam='hisat.sorted.bam',
                 '{}_{}'.format(sra_acc, novel_splicesite_outfile),
                 '{}_{}'.format(sra_acc, stringtie_file),
                 '{}_{}'.format(sra_acc, abundance),
-                '{}_{}'.format(sra_acc, multi_map_frac))
+                multi_map_frac)
 
 1
 if __name__ == '__main__':
