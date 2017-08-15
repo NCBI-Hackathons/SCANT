@@ -90,12 +90,12 @@ def run(args):
     elif single_srr:
         align(args.genome,
               args.sra_acc,
-              args.reference,
               args.processes,
               args.outdir,
               args.bam,
               args.novel_splicesite_outfile)
-        count(args.stringtie_file,
+        count(args.reference,
+              args.stringtie_file,
               args.abundance,
               args.multi_map_frac,
               args.processes)
