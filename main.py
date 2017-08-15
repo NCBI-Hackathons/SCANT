@@ -70,6 +70,7 @@ def run_all(genome, srr_set, ref, p='4', outdir='', bam='hisat.sorted.bam',
               outdir,
               '{}_{}'.format(sra_acc, bam),
               '{}_{}'.format(sra_acc, novel_splicesite_outfile)
+              )
         count('{}_{}'.format(sra_acc, stringtie_file),
               '{}_{}'.format(sra_acc, abundance),
               multi_map_frac,
