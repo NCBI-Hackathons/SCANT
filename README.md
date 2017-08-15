@@ -56,7 +56,7 @@ main.py --sra_acc <SRR_accession> /path/to/HISAT2_index_files
 
 ## People/Team
 * Ashis Saha <ashis@jhu.edu>
-* Michael Chambers <michael.chambers2@nih.gov>
+* Michael Chambers <greenkidneybean@gmail.com>
 * Allissa Dillman <allissa.dillman@gmail.com>
 * Jessime Kirk <jessime@email.unc.edu>
 * Sara Kimiko Suzuki <sksuzuki@ad.unc.edu>
