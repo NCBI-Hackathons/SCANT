@@ -17,7 +17,11 @@ def run(genome, sra_acc, ref, p='4', outdir='', bam='hisat.sorted.bam',
 
     cmd = ['./hisat.sh'] + [p, genome, sra_acc, novel_splicesite_outfile, bam]
     sp.run(cmd)
-    cmd = ['./stringtie.sh'] + [p, ref, stringtie_file, abundance, multi_map_frac, bam]
+    cmd = ['stringtie']
+    if p: cmd.extend(['-p', p])
+    if ref: cmd.extend(['-G', ref])
+    if abundance: cmd.extend(['-A', abundance])
+    cmd += ['-o', stringtie_file, '-M', multi_map_frac, bam]
     sp.run(cmd)
 
 def run_all(genome, srr_file, ref, p='4', outdir='', bam='hisat.sorted.bam',
