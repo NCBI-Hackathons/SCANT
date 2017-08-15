@@ -1,12 +1,18 @@
 import sys
+import os
 import argparse
 import subprocess as sp
 
 
-def run(genome=None, sra_acc=None, ref=None p='4', outdir='', bam='hisat.bam',
+def run(genome=None, sra_acc=None, ref=None, p='4', outdir='', bam='hisat.bam',
         novel_splicesite_outfile='splicesite.tab', stringtie_file='stringtie_file.gtf',
-        adundance='adunance.tab', multi_map_frac='.95'):
-    cmd = ['./hisat2.sh'] + [p, genome, sra_acc, novel_splicesite_outfile, bam]
+        abundance='abundance.tab', multi_map_frac='.95'):
+    bam = os.path.join(outdir, bam)
+    novel_splicesite_outfile = os.path.join(outdir, novel_splicesite_outfile)
+    stringtie_file = os.path.join(outdir, stringtie_file)
+    abundance = os.path.join(outdir, abundance)
+
+    cmd = ['./hisat.sh'] + [p, genome, sra_acc, novel_splicesite_outfile, bam]
     sp.run(cmd)
     cmd = ['./stringtie.sh'] + [p, ref, stringtie_file, abundance, multi_map_frac, bam]
     sp.run(cmd)
@@ -23,7 +29,7 @@ if __name__ == '__main__':
     parser.add_argument('-nso', '--novel_splicesite_outfile', default='', help='Set stringtie novel_splicesite_outfile parameter')
     parser.add_argument('-sf', '--stringtie_file', default='', help='name of stringtie output gtf file')
     parser.add_argument('-a', '--abundance', default='', help='Set stringtie -A parameter')
-    parser.add_argument('-m' '--multi_map_frac', default='.95', help='Set stringtie -M parameter')
+    parser.add_argument('-m', '--multi_map_frac', default='.95', help='Set stringtie -M parameter')
 
     if len(sys.argv)==1:
         parser.print_help()
