@@ -4,7 +4,7 @@ import argparse
 import subprocess as sp
 
 
-def run(genome=None, sra_acc=None, ref=None, p='4', outdir='', bam='hisat.bam',
+def run(genome, sra_acc, ref, p='4', outdir='', bam='hisat.sorted.bam',
         novel_splicesite_outfile='splicesite.tab', stringtie_file='stringtie_file.gtf',
         abundance='abundance.tab', multi_map_frac='.95'):
     bam = os.path.join(outdir, bam)
@@ -13,13 +13,30 @@ def run(genome=None, sra_acc=None, ref=None, p='4', outdir='', bam='hisat.bam',
     abundance = os.path.join(outdir, abundance)
 
     print([p, genome, sra_acc, novel_splicesite_outfile, bam])
-    print('\n\n')
     print([p, ref, stringtie_file, abundance, multi_map_frac, bam])
+    print('\n\n')
+    
     cmd = ['./hisat.sh'] + [p, genome, sra_acc, novel_splicesite_outfile, bam]
     sp.run(cmd)
     cmd = ['./stringtie.sh'] + [p, ref, stringtie_file, abundance, multi_map_frac, bam]
     sp.run(cmd)
 
+def run_all(srr_file):
+    with open(srr_file) as srr:
+        for sra_acc in srr:
+            sra_acc = sra_acc.strip()
+            run(genome,
+                sra_acc,
+                ref,
+                p,
+                outdir,
+                '{}_{}'.format(sra_acc, bam),
+                '{}_{}'.format(sra_acc, novel_splicesite_outfile),
+                '{}_{}'.format(sra_acc, stringtie_file),
+                '{}_{}'.format(sra_acc, abundance),
+                '{}_{}'.format(sra_acc, multi_map_frac))
+
+1
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__,
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -28,7 +45,7 @@ if __name__ == '__main__':
     parser.add_argument('reference', help='Path to reference .gtf file')
     parser.add_argument('-p', '--processes', default='4', help='number of cores to use in run')
     parser.add_argument('-o', '--outdir', default='', help='name of directory to save everything to')
-    parser.add_argument('-b', '--bam', default='hisat.bam', help='name of hisat2 output bam file')
+    parser.add_argument('-b', '--bam', default='hisat.sorted.bam', help='name of hisat2 output bam file')
     parser.add_argument('-nso', '--novel_splicesite_outfile', default='splicesite.tab', help='Set stringtie novel_splicesite_outfile parameter')
     parser.add_argument('-sf', '--stringtie_file', default='stringtie_file.gtf', help='name of stringtie output gtf file')
     parser.add_argument('-a', '--abundance', default='', help='Set stringtie -A parameter')
