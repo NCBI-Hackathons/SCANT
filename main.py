@@ -7,7 +7,7 @@ import subprocess as sp
 import requests
 import re
 
-def count(ref, stringtie_file='stringtie_file.gtf', abundance='abundance.tab', multi_map_frac='.95', outdir='', p='4'):
+def count(bam='hisat.sorted.bam', ref='', stringtie_file='stringtie_file.gtf', abundance='abundance.tab', multi_map_frac='.95', outdir='', p='4'):
     """Parse arguments for running Stringtie
     """
     stringtie_file = os.path.join(outdir, stringtie_file)
