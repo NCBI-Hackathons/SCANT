@@ -74,11 +74,12 @@ def run_all(genome, srr_set, ref='', p='4', outdir='', bam='hisat.sorted.bam',
             srr_set = set([l.strip() for l in srr_set.readlines()])
     for sra_acc in srr_set:
         sra_acc = sra_acc.strip()
+        bam = '{}_{}'.format(sra_acc, bam)
         align(genome,
               sra_acc,
               p,
               outdir,
-              '{}_{}'.format(sra_acc, bam),
+              bam,
               '{}_{}'.format(sra_acc, novel_splicesite_outfile)
               )
         count(bam,
