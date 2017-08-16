@@ -69,10 +69,15 @@ def count(ref, bam='hisat.sorted.bam', stringtie_file='stringtie_file.gtf', abun
 def merge(ref, outdir='', stringtie_merge_outfile='stringtie_merge.gtf'):
     stringtie_merge_outfile = os.path.join(outdir, stringtie_merge_outfile)
 
+    print('Merging Stringtie files')
     cmd = ['./stringtie_merge.sh'] + [ref, stringtie_merge_outfile]
     sp.run(cmd)
 
-# def compare():
+def compare(ref, stringtie_merge_outfile, outdir='', gffcomp_annot_gtf='annotated.gtf'):
+    gffcomp_annot_gtf = os.path.join(outdir, gffcomp_annot_gtf)
+
+    cmd = ['./compare.sh'] + [ref, stringtie_merge_outfile]
+    sp.run(cmd)
 
 def run_all(genome, ref, srr_set, p='4', outdir='', bam='hisat.sorted.bam',
             novel_splicesite_outfile='splicesite.tab', stringtie_file='stringtie_file.gtf',
@@ -101,7 +106,8 @@ def run_all(genome, ref, srr_set, p='4', outdir='', bam='hisat.sorted.bam',
               outdir,
               p
               )
-        merge(ref, stringtie_merge_outfile)
+        merge(ref, outdir, '{}_{}'.format(sra_acc, stringtie_merge_outfile)
+        compare(ref, stringtie_merge_outfile, outdir, '{}_{}'.format(sra_acc, gffcomp_annot_gtf)
 
 def run(args):
     error = not args.sra_acc and not args.file
@@ -143,7 +149,8 @@ def run(args):
             args.stringtie_file,
             args.abundance,
             args.multi_map_frac,
-            arg.stringtie_merge_outfile)
+            arg.stringtie_merge_outfile
+            arg.gffcomp_annot_gtf)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__,
@@ -160,6 +167,7 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--abundance', default='abundance.tab', help='Set stringtie -A parameter')
     parser.add_argument('-m', '--multi_map_frac', default='.95', help='Set stringtie -M parameter')
     parser.add_argument('-smo', '--stringtie_merge_outfile', default='stringtie_merge.gtf', help='name of merged .gtf file from stringtie for pooled samples')
+    parser.add_argument('-gca', '--gffcomp_annot_gtf', default='annotated.gtf', help='name of gffcompare annotated file for identifying novel exons')
 
     if len(sys.argv)==1:
         parser.print_help()
