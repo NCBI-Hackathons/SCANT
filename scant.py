@@ -66,23 +66,55 @@ def count(ref, bam='hisat.sorted.bam', stringtie_file='stringtie_file.gtf', abun
     cmd += ['-G', ref, '-o', stringtie_file, '-M', multi_map_frac, bam]
     sp.run(cmd)
 
-def merge(ref, outdir='', stringtie_merge_outfile='stringtie_merge.gtf'):
-    stringtie_merge_outfile = os.path.join(outdir, stringtie_merge_outfile)
+def merge(ref, outdir=''):
+    stringtie_merge_outfile = os.path.join(outdir, 'stringtie_merge.gtf')
 
-    print('Merging Stringtie files')
+    print('Running Stringtie --merge')
     cmd = ['./stringtie_merge.sh'] + [ref, stringtie_merge_outfile]
     sp.run(cmd)
 
-def compare(ref, stringtie_merge_outfile, outdir='', gffcomp_annot_gtf='annotated.gtf'):
-    gffcomp_annot_gtf = os.path.join(outdir, gffcomp_annot_gtf)
+def compare(ref, stringtie_merge_outfile, outdir=''):
+    stringtie_merge_outfile = os.path.join(outdir, 'stringtie_merge.gtf')
+    gffcomp_annot_gtf = os.path.join(outdir, 'annotated.gtf')
 
+    print('Running Gffcompare')
     cmd = ['./compare.sh'] + [ref, stringtie_merge_outfile]
     sp.run(cmd)
 
+def grab_unique_exons(gffcomp_annot_gtf, outdir=''):
+    gffcomp_annot_gtf = os.path.join(outdir, 'annotated.gtf')
+
+    tmp_file = []
+    new_file = []
+
+    print('Grabbing unique exons')
+    with open(gffcomp_annot_gtf) as gtf:
+        gtf=gtf.readlines()
+
+    cc = 'class_code'
+    for i in range(len(gtf)):
+        if cc in gtf[i]:
+            cc_index = gtf[i].find(cc)
+            class_code = gtf[i][cc_index:cc_index+14]
+        else:
+            gtf[i]=gtf[i]+class_code
+
+    cc_u = 'class_code "u"'
+    for j in range(len(gtf)):
+        if cc_u in gtf[j]:
+            tmp_file.append(gtf[j])
+    for k in range(len(tmp_file)):
+        tmp_file[k]=tmp_file[k].replace(cc_u, '')
+        if 'exon' in tmp_file[k]:
+            new_file.append(tmp_file[k])
+
+    with open(unique_exons_outfile, 'w') as output:
+        for line in new_file:
+            output.write('{}'.format(line))
+
 def run_all(genome, ref, srr_set, p='4', outdir='', bam='hisat.sorted.bam',
             novel_splicesite_outfile='splicesite.tab', stringtie_file='stringtie_file.gtf',
-            abundance='abundance.tab', multi_map_frac='.95',
-            stringtie_merge_outfile='stringtie_merge.gtf'):
+            abundance='abundance.tab', multi_map_frac='.95'):
     """Align and count each of a set of SRR numbers
     """
     if isinstance(srr_set, str):
@@ -106,8 +138,9 @@ def run_all(genome, ref, srr_set, p='4', outdir='', bam='hisat.sorted.bam',
               outdir,
               p
               )
-        merge(ref, outdir, '{}_{}'.format(sra_acc, stringtie_merge_outfile)
-        compare(ref, stringtie_merge_outfile, outdir, '{}_{}'.format(sra_acc, gffcomp_annot_gtf)
+        merge(ref, outdir)
+        compare(ref, stringtie_merge_outfile, outdir)
+        grab_unique_exons(gffcomp_annot_gtf, outdir)
 
 def run(args):
     error = not args.sra_acc and not args.file
@@ -148,9 +181,7 @@ def run(args):
             args.novel_splicesite_outfile,
             args.stringtie_file,
             args.abundance,
-            args.multi_map_frac,
-            arg.stringtie_merge_outfile
-            arg.gffcomp_annot_gtf)
+            args.multi_map_frac)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__,
@@ -166,8 +197,6 @@ if __name__ == '__main__':
     parser.add_argument('-sf', '--stringtie_file', default='stringtie_file.gtf', help='name of stringtie output gtf file')
     parser.add_argument('-a', '--abundance', default='abundance.tab', help='Set stringtie -A parameter')
     parser.add_argument('-m', '--multi_map_frac', default='.95', help='Set stringtie -M parameter')
-    parser.add_argument('-smo', '--stringtie_merge_outfile', default='stringtie_merge.gtf', help='name of merged .gtf file from stringtie for pooled samples')
-    parser.add_argument('-gca', '--gffcomp_annot_gtf', default='annotated.gtf', help='name of gffcompare annotated file for identifying novel exons')
 
     if len(sys.argv)==1:
         parser.print_help()
