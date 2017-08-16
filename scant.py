@@ -65,15 +65,17 @@ def count(ref, bam='hisat.sorted.bam', stringtie_file='stringtie_file.gtf', abun
     if abundance: cmd.extend(['-A', abundance])
     cmd += ['-G', ref, '-o', stringtie_file, '-M', multi_map_frac, bam]
     sp.run(cmd)
+    return stringtie_file
 
-def merge(ref, outdir=''):
+def merge(ref, gtfs_str, outdir=''):
     """Merges all stringtie output files
     """
     stringtie_merge_outfile = os.path.join(outdir, 'stringtie_merge.gtf')
 
     print('Running Stringtie --merge')
-    cmd = ['./stringtie_merge.sh'] + [ref, stringtie_merge_outfile]
-    sp.run(cmd)
+    #cmd = ['./stringtie_merge.sh'] + [ref, stringtie_merge_outfile, gtfs_str]
+    cmd = 'stringtie --merge -G {} -o {} {}'.format(ref, stringtie_merge_outfile, gtfs_str)
+    sp.run(cmd.split())
 
 def compare(ref, stringtie_merge_outfile, outdir=''):
     """
@@ -121,6 +123,7 @@ def run_all(genome, ref, srr_set, p='4', outdir='', bam='hisat.sorted.bam',
     if isinstance(srr_set, str):
         with open(srr_set) as srr_set:
             srr_set = set([l.strip() for l in srr_set.readlines()])
+    stringtie_out_ls = []
     for sra_acc in srr_set:
         sra_acc = sra_acc.strip()
         bam_sra = '{}_{}'.format(sra_acc, bam)
@@ -131,17 +134,18 @@ def run_all(genome, ref, srr_set, p='4', outdir='', bam='hisat.sorted.bam',
               bam_sra,
               '{}_{}'.format(sra_acc, novel_splicesite_outfile)
               )
-        count(ref,
-              bam_sra,
-              '{}_{}'.format(sra_acc, stringtie_file),
-              '{}_{}'.format(sra_acc, abundance),
-              multi_map_frac,
-              outdir,
-              p
-              )
-        merge(ref, outdir)
-        compare(ref, stringtie_merge_outfile, outdir)
-        grab_unique_exons(gffcomp_annot_gtf, outdir)
+        sto = count(ref,
+                    bam_sra,
+                    '{}_{}'.format(sra_acc, stringtie_file),
+                    '{}_{}'.format(sra_acc, abundance),
+                    multi_map_frac,
+                    outdir,
+                    p
+                    )
+        stringtie_merge_outfile.append(sto)
+    merge(ref, ' '.join(stringtie_out_ls), outdir)
+    compare(ref, stringtie_merge_outfile, outdir)
+    grab_unique_exons(gffcomp_annot_gtf, outdir)
 
 def run(args):
     error = not args.sra_acc and not args.file
