@@ -67,6 +67,8 @@ def count(ref, bam='hisat.sorted.bam', stringtie_file='stringtie_file.gtf', abun
     sp.run(cmd)
 
 def merge(ref, outdir=''):
+    """Merges all stringtie output files
+    """
     stringtie_merge_outfile = os.path.join(outdir, 'stringtie_merge.gtf')
 
     print('Running Stringtie --merge')
@@ -74,6 +76,8 @@ def merge(ref, outdir=''):
     sp.run(cmd)
 
 def compare(ref, stringtie_merge_outfile, outdir=''):
+    """
+    """
     stringtie_merge_outfile = os.path.join(outdir, 'stringtie_merge.gtf')
     gffcomp_annot_gtf = os.path.join(outdir, 'annotated.gtf')
 
@@ -82,34 +86,31 @@ def compare(ref, stringtie_merge_outfile, outdir=''):
     sp.run(cmd)
 
 def grab_unique_exons(gffcomp_annot_gtf, outdir=''):
+    """
+    """
     gffcomp_annot_gtf = os.path.join(outdir, 'annotated.gtf')
-
-    tmp_file = []
-    new_file = []
+    unique_exons_outfile = os.path.join(outdir, 'unique_exons.txt')
 
     print('Grabbing unique exons')
     with open(gffcomp_annot_gtf) as gtf:
         gtf=gtf.readlines()
 
     cc = 'class_code'
-    for i in range(len(gtf)):
-        if cc in gtf[i]:
-            cc_index = gtf[i].find(cc)
-            class_code = gtf[i][cc_index:cc_index+14]
-        else:
-            gtf[i]=gtf[i]+class_code
-
     cc_u = 'class_code "u"'
-    for j in range(len(gtf)):
-        if cc_u in gtf[j]:
-            tmp_file.append(gtf[j])
-    for k in range(len(tmp_file)):
-        tmp_file[k]=tmp_file[k].replace(cc_u, '')
-        if 'exon' in tmp_file[k]:
-            new_file.append(tmp_file[k])
+
+    gtf = []
+    for i, line in enumerate(gtf):
+        if cc in line:
+            cc_index = line.find(cc)
+            class_code = line[cc_index:cc_index+len(cc_u)]
+        else:
+            gtf[i]=line+class_code
+
+    gtf = [line for line in gtf if cc_u in line]
+    gtf = [line.replace(cc_u, '') for line in gtf if 'exon' in line]
 
     with open(unique_exons_outfile, 'w') as output:
-        for line in new_file:
+        for line in gtf:
             output.write('{}'.format(line))
 
 def run_all(genome, ref, srr_set, p='4', outdir='', bam='hisat.sorted.bam',
