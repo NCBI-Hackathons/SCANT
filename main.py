@@ -105,10 +105,10 @@ def run(args):
               args.processes)
         return
 
-    elif args.sra_acc: #project id (PRJNA)
+    elif do_prjna:
         sra_acc = download_project(args.sra_acc)
-    else: #A file of SRR ids
-        sra_acc = args.sra_acc
+    else:
+        sra_acc = args.file
 
     run_all(args.genome,
             sra_acc,
