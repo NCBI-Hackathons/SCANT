@@ -15,7 +15,7 @@ sort_bed=$4
 
 concatenated_bed="$outdir/concatenated.bed"
 sorted_bed="$outdir/concatenated_sorted.bed"
-concensus_bed="$outdir/concensus.bed"
+consensus_bed="$outdir/consensus.bed"
 
 # merge bed files and count #cells for each 
 printf  "" > $concatenated_bed
@@ -28,7 +28,7 @@ done
 
 sort -k1,1 -k2,2n -k3,3n -o $sorted_bed  $concatenated_bed
 
-bedtools merge -i $sorted_bed -c 4 -o count_distinct > $concensus_bed    
+bedtools merge -i $sorted_bed -c 4 -o count_distinct > $consensus_bed    
 
 # clean files
 rm $concatenated_bed
