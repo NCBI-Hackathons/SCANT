@@ -7,14 +7,22 @@ import subprocess as sp
 import requests
 import re
 
+def report_params(params, values):
+    for p, v in zip(params, values):
+        print('{}: {}'.format(p, v))
+    print()
+
 def count(bam='hisat.sorted.bam', ref='', stringtie_file='stringtie_file.gtf', abundance='abundance.tab', multi_map_frac='.95', outdir='', p='4'):
     """Parse arguments for running Stringtie
     """
     stringtie_file = os.path.join(outdir, stringtie_file)
     abundance = os.path.join(outdir, abundance)
     bam = os.path.join(outdir, bam)
-    print('Running Stringtie\n', [p, ref, stringtie_file, abundance, multi_map_frac, bam])
-    print('\n\n')
+    print('Running Stringtie')
+    params = ['processes', 'reference', 'stringtie_file', 'abundance', 'multi_map_frac', 'bam']
+    values = [p, ref, stringtie_file, abundance, multi_map_frac, bam]
+    report_params(params, values)
+
     cmd = ['stringtie']
     if p: cmd.extend(['-p', p])
     if ref: cmd.extend(['-G', ref])
@@ -27,8 +35,10 @@ def align(genome, sra_acc, p='4', outdir='', bam='hisat.sorted.bam', novel_splic
     """
     novel_splicesite_outfile = os.path.join(outdir, novel_splicesite_outfile)
     bam = os.path.join(outdir, bam)
-    print('Running Hisat2\n', [p, genome, sra_acc, novel_splicesite_outfile, bam])
-    cmd = ['./hisat.sh'] + [p, genome, sra_acc, novel_splicesite_outfile, bam]
+    print('Running Hisat2')
+    params = ['processes', 'genome', 'sra_acc', 'novel_splicesite_outfile', 'bam']
+    values = [p, genome, sra_acc, novel_splicesite_outfile, bam]
+    cmd = ['./hisat.sh'] + values
     sp.run(cmd)
 
 def download_project(query):
