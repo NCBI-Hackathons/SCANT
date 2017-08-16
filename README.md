@@ -13,7 +13,7 @@ The analysis of single cell RNA-Seq data involves the use of a disparate set of 
 Depending on the amount of the data being analyzed, the pipeline can require a significant amount of computational resources. We recommend using a computer that has at least 8 processor cores, 16 Gb of RAM and approximately 1.5 Gb hard drive space for each analyzed run. Additional disk space is needed for one or more HISAT2 index files.
 ### Software Packages
 The pipeline expects the following packages are installed and available in the PATH:
-* Python (version 3.5 or above)
+* [Python](https://www.python.org/downloads/release/python-350/) (version 3.5 or above)
 * [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) (version 2.1.0)
 * [StringTie](https://ccb.jhu.edu/software/stringtie/) (version 1.3.3b)
 * [Samtools](http://www.htslib.org/) (version 1.3.1)
@@ -87,7 +87,7 @@ optional arguments:
 
 ## Limitations/Caveats/To-do
 * When using the `--sra_acc` option with a BioProject identifier, users should ensure that all of the runs within the BioProject are of same kind. In a situation where the BioProject includes different kind of runs, users should use the `--file` option and provide a list of only the SRR accessions of interest.
-*
+
 
 ## People
 * Michael Chambers <greenkidneybean@gmail.com>
