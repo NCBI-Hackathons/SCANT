@@ -13,37 +13,6 @@ def report_params(params, values):
         print('{}: {}'.format(p, v))
     print()
 
-def count(bam='hisat.sorted.bam', ref='', stringtie_file='stringtie_file.gtf', abundance='abundance.tab', multi_map_frac='.95', outdir='', p='4'):
-    """Parse arguments for running Stringtie
-    """
-    stringtie_file = os.path.join(outdir, stringtie_file)
-    abundance = os.path.join(outdir, abundance)
-    bam = os.path.join(outdir, bam)
-    print('Running Stringtie')
-    params = ['processes', 'reference', 'stringtie_file', 'abundance', 'multi_map_frac', 'bam']
-    values = [p, ref, stringtie_file, abundance, multi_map_frac, bam]
-    report_params(params, values)
-
-    cmd = ['stringtie']
-    if p: cmd.extend(['-p', p])
-    if ref: cmd.extend(['-G', ref])
-    if abundance: cmd.extend(['-A', abundance])
-    cmd += ['-o', stringtie_file, '-M', multi_map_frac, bam]
-    sp.run(cmd)
-
-def align(genome, sra_acc, p='4', outdir='', bam='hisat.sorted.bam', novel_splicesite_outfile='splicesite.tab'):
-    """Parse arguments for running Hisat2
-    """
-    novel_splicesite_outfile = os.path.join(outdir, novel_splicesite_outfile)
-    bam = os.path.join(outdir, bam)
-    print('Running Hisat2')
-    params = ['processes', 'genome', 'sra_acc', 'novel_splicesite_outfile', 'bam']
-    values = [p, genome, sra_acc, novel_splicesite_outfile, bam]
-    report_params(params, values)
-
-    cmd = ['./hisat.sh'] + values
-    sp.run(cmd)
-
 def download_project(query):
     """Download all [SED]RR numbers for a given SRA project
 
@@ -67,9 +36,48 @@ def download_project(query):
 
     return srr_set
 
-def run_all(genome, srr_set, ref='', p='4', outdir='', bam='hisat.sorted.bam',
+def align(genome, sra_acc, p='4', outdir='', bam='hisat.sorted.bam', novel_splicesite_outfile='splicesite.tab'):
+    """Parse arguments for running Hisat2
+    """
+    novel_splicesite_outfile = os.path.join(outdir, novel_splicesite_outfile)
+    bam = os.path.join(outdir, bam)
+    print('Running Hisat2')
+    params = ['processes', 'genome', 'sra_acc', 'novel_splicesite_outfile', 'bam']
+    values = [p, genome, sra_acc, novel_splicesite_outfile, bam]
+    report_params(params, values)
+
+    cmd = ['./hisat.sh'] + values
+    sp.run(cmd)
+
+def count(ref, bam='hisat.sorted.bam', stringtie_file='stringtie_file.gtf', abundance='abundance.tab', multi_map_frac='.95', outdir='', p='4'):
+    """Parse arguments for running Stringtie
+    """
+    stringtie_file = os.path.join(outdir, stringtie_file)
+    abundance = os.path.join(outdir, abundance)
+    bam = os.path.join(outdir, bam)
+    print('Running Stringtie')
+    params = ['processes', 'reference', 'stringtie_file', 'abundance', 'multi_map_frac', 'bam']
+    values = [p, ref, stringtie_file, abundance, multi_map_frac, bam]
+    report_params(params, values)
+
+    cmd = ['stringtie']
+    if p: cmd.extend(['-p', p])
+    if abundance: cmd.extend(['-A', abundance])
+    cmd += ['-G', ref, '-o', stringtie_file, '-M', multi_map_frac, bam]
+    sp.run(cmd)
+
+def merge(ref, outdir='', stringtie_merge_outfile='stringtie_merge.gtf'):
+    stringtie_merge_outfile = os.path.join(outdir, stringtie_merge_outfile)
+
+    cmd = ['./stringtie_merge.sh'] + [ref, stringtie_merge_outfile]
+    sp.run(cmd)
+
+# def compare():
+
+def run_all(genome, ref, srr_set, p='4', outdir='', bam='hisat.sorted.bam',
             novel_splicesite_outfile='splicesite.tab', stringtie_file='stringtie_file.gtf',
-            abundance='abundance.tab', multi_map_frac='.95'):
+            abundance='abundance.tab', multi_map_frac='.95',
+            stringtie_merge_outfile='stringtie_merge.gtf'):
     """Align and count each of a set of SRR numbers
     """
     if isinstance(srr_set, str):
@@ -85,14 +93,15 @@ def run_all(genome, srr_set, ref='', p='4', outdir='', bam='hisat.sorted.bam',
               bam_sra,
               '{}_{}'.format(sra_acc, novel_splicesite_outfile)
               )
-        count(bam_sra,
-              ref,
+        count(ref,
+              bam_sra,
               '{}_{}'.format(sra_acc, stringtie_file),
               '{}_{}'.format(sra_acc, abundance),
               multi_map_frac,
               outdir,
               p
               )
+        merge(ref, stringtie_merge_outfile)
 
 def run(args):
     error = not args.sra_acc and not args.file
@@ -110,8 +119,8 @@ def run(args):
               args.outdir,
               args.bam,
               args.novel_splicesite_outfile)
-        count(args.bam,
-              args.reference,
+        count(args.reference,
+              args.bam,
               args.stringtie_file,
               args.abundance,
               args.multi_map_frac,
@@ -125,23 +134,24 @@ def run(args):
         sra_acc = args.file
 
     run_all(args.genome,
-            sra_acc,
             args.reference,
+            sra_acc,
             args.processes,
             args.outdir,
             args.bam,
             args.novel_splicesite_outfile,
             args.stringtie_file,
             args.abundance,
-            args.multi_map_frac)
+            args.multi_map_frac,
+            arg.stringtie_merge_outfile)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__,
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('genome', help='path of genome file')
+    parser.add_argument('reference', help='path to reference .gtf file')
     parser.add_argument('--sra_acc', default='', help='SRR or PRJNA number')
     parser.add_argument('--file', default='', help='path to a file with newline separated SRR numbers')
-    parser.add_argument('-r', '--reference', default='', help='path to reference .gtf file')
     parser.add_argument('-p', '--processes', default='4', help='number of cores to use in run')
     parser.add_argument('-o', '--outdir', default='', help='name of directory to save everything to')
     parser.add_argument('-b', '--bam', default='hisat.sorted.bam', help='name of hisat2 output bam file')
@@ -149,7 +159,7 @@ if __name__ == '__main__':
     parser.add_argument('-sf', '--stringtie_file', default='stringtie_file.gtf', help='name of stringtie output gtf file')
     parser.add_argument('-a', '--abundance', default='abundance.tab', help='Set stringtie -A parameter')
     parser.add_argument('-m', '--multi_map_frac', default='.95', help='Set stringtie -M parameter')
-    #parser.add_argument('-all', '--all_sra_acc', action='store_true', help='Set to run a file of SRA numbers instead of just one')
+    parser.add_argument('-smo', '--stringtie_merge_outfile', default='stringtie_merge.gtf', help='name of merged .gtf file from stringtie for pooled samples')
 
     if len(sys.argv)==1:
         parser.print_help()
