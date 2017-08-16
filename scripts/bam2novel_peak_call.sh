@@ -32,7 +32,7 @@ else
 
 fi
 
-peakbed="$outdir/${prefix}_summits.bed"
+peakbed="$outdir/${prefix}_peaks.narrowPeak"
 novelbed="$outdir/${prefix}_novel.bed"
 
 # find novel regions
