@@ -1,9 +1,11 @@
 # SingleCellTranscriptEvidence
 
 ## Introduction
-The analysis of single cell RNA-Seq data involves the use of a disparate set of software packages to produce a list of genes that are expressed by the cell. Users can employ the pipeline described here to analyze sequences submitted to the Sequence Read Archive (SRA) to discover novel genes yet to be annotated. The workflow for the pipeline is in the figure shown below:
+The analysis of single cell RNA-Seq data involves the use of a disparate set of software packages to identify the genes that are expressed within the sample. Although sophisticated software packages are now just a click away from being employed for these analyses, they expect the user to string the outputs from one step of the analyses to the next piece of software. We address this challenge by creating a pipeline that brings together a set of well-tested tools and combines them into a single script that is simple and easy-to-use. The pipeline described here allows users to analyze data from the Sequence Read Archive (SRA) by providing just the BioProject accession or specific run identifiers in combination with HISAT2 index files for the genome of interest. Upon execution, this pipeline identifies sequencing reads that correspond to novel genes that are yet to be annotated.
 
-## Workflow, Use-case scenarios
+## Workflow
+![Workflow]( SingleCellTranscriptEvidence/workflow.jpg )
+
 
 ## Dependencies
 The pipeline expects the following packages are installed and available in the PATH:
