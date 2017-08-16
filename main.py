@@ -8,6 +8,7 @@ import requests
 import re
 
 def report_params(params, values):
+    print()
     for p, v in zip(params, values):
         print('{}: {}'.format(p, v))
     print()
@@ -38,6 +39,8 @@ def align(genome, sra_acc, p='4', outdir='', bam='hisat.sorted.bam', novel_splic
     print('Running Hisat2')
     params = ['processes', 'genome', 'sra_acc', 'novel_splicesite_outfile', 'bam']
     values = [p, genome, sra_acc, novel_splicesite_outfile, bam]
+    report_params(params, values)
+
     cmd = ['./hisat.sh'] + values
     sp.run(cmd)
 
@@ -74,15 +77,15 @@ def run_all(genome, srr_set, ref='', p='4', outdir='', bam='hisat.sorted.bam',
             srr_set = set([l.strip() for l in srr_set.readlines()])
     for sra_acc in srr_set:
         sra_acc = sra_acc.strip()
-        bam = '{}_{}'.format(sra_acc, bam)
+        bam_sra = '{}_{}'.format(sra_acc, bam)
         align(genome,
               sra_acc,
               p,
               outdir,
-              bam,
+              bam_sra,
               '{}_{}'.format(sra_acc, novel_splicesite_outfile)
               )
-        count(bam,
+        count(bam_sra,
               ref,
               '{}_{}'.format(sra_acc, stringtie_file),
               '{}_{}'.format(sra_acc, abundance),
