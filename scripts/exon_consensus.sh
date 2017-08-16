@@ -3,7 +3,7 @@
 # and outputs #sampels contributed to each merged region.
 
 # read bam input file
-if [ "$#" -lt "4" ]; then
+if [ "$#" -lt "3" ]; then
   echo "error - inconsistent number of arguments."
   exit 1
 fi
@@ -11,7 +11,6 @@ fi
 bed_dir=$1
 bed_suffix=$2
 outdir=$3
-sort_bed=$4
 
 concatenated_bed="$outdir/concatenated.bed"
 sorted_bed="$outdir/concatenated_sorted.bed"
