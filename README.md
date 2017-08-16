@@ -18,6 +18,10 @@ The pipeline expects the following packages are installed and available in the P
 * [StringTie](https://ccb.jhu.edu/software/stringtie/) (version 1.3.3b)
 * [Samtools](http://www.htslib.org/) (version 1.3.1)
 * [gffcompare](https://github.com/gpertea/gffcompare)
+* R (version 3.3.2 or above)
+* [bedtools](http://bedtools.readthedocs.io/)
+
+
 ### Data files
 HISAT2 index files are required for the genome of interest to execute the script. For a selected list of organisms, pre-computed index files can be downloaded from (ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/data/). If using `-r` option with the pre-computed HISAT2 indexes, it is recommended to download the GTF files for the appropriate organism from Ensembl to prevent any errors caused by the potential mismatch between the chromosome names used in the index files and the GTF files.
 
