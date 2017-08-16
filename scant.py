@@ -73,7 +73,6 @@ def merge(ref, gtfs_str, outdir=''):
     stringtie_merge_outfile = os.path.join(outdir, 'stringtie_merge.gtf')
 
     print('Running Stringtie --merge')
-    #cmd = ['./stringtie_merge.sh'] + [ref, stringtie_merge_outfile, gtfs_str]
     cmd = 'stringtie --merge -G {} -o {} {}'.format(ref, stringtie_merge_outfile, gtfs_str)
     sp.run(cmd.split())
 
@@ -91,7 +90,7 @@ def grab_unique_exons(gffcomp_annot_gtf, outdir=''):
     """
     """
     gffcomp_annot_gtf = os.path.join(outdir, 'annotated.gtf')
-    unique_exons_outfile = os.path.join(outdir, 'unique_exons.txt')
+    unique_exons_outfile = os.path.join(outdir, 'unique_exons.gtf')
 
     print('Grabbing unique exons')
     with open(gffcomp_annot_gtf) as gtf:
@@ -115,7 +114,21 @@ def grab_unique_exons(gffcomp_annot_gtf, outdir=''):
         for line in gtf:
             output.write('{}'.format(line))
 
-def run_all(genome, ref, srr_set, p='4', outdir='', bam='hisat.sorted.bam',
+def gtf2fasta(genome, outdir=''):
+    """Convert our edited 'unique_exons.gtf' to a fasta file"""
+    gtf = os.path.join(outdir, 'unique_exons.gtf')
+    fasta = os.path.join(outdir, 'transcripts.fa')
+    cmd = './fasta_grab.R -g {} -gtf {} -o {}'.format(gtf, genome, fasta)
+    sp.run(cmd.split())
+
+def blast_fasta(db, p='4', outdir=''):
+    """Use rpstblastn the search for protein motifs in the fasta file"""
+    fasta = os.path.join(outdir, 'transcripts.fa')
+    outfile = 'rpstblastn.out'
+    cmd = 'rpstblastn -query {} -db {} -evalue 0.01 -num_threads {} -outfmt 6 -out {}'.format(fasta, db, p, outfile)
+    sp.run(cmd.split())
+
+def run_all(genome, ref, srr_set, db, p='4', outdir='', bam='hisat.sorted.bam',
             novel_splicesite_outfile='splicesite.tab', stringtie_file='stringtie_file.gtf',
             abundance='abundance.tab', multi_map_frac='.95'):
     """Align and count each of a set of SRR numbers
@@ -146,6 +159,8 @@ def run_all(genome, ref, srr_set, p='4', outdir='', bam='hisat.sorted.bam',
     merge(ref, ' '.join(stringtie_out_ls), outdir)
     compare(ref, stringtie_merge_outfile, outdir)
     grab_unique_exons(gffcomp_annot_gtf, outdir)
+    gtf2fasta(genome, outdir)
+    blast_fasta(db, p, outdir)
 
 def run(args):
     error = not args.sra_acc and not args.file
@@ -186,7 +201,8 @@ def run(args):
             args.novel_splicesite_outfile,
             args.stringtie_file,
             args.abundance,
-            args.multi_map_frac)
+            args.multi_map_frac,
+            args.rpstblastn_db)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(usage=__doc__,
@@ -202,6 +218,7 @@ if __name__ == '__main__':
     parser.add_argument('-sf', '--stringtie_file', default='stringtie_file.gtf', help='name of stringtie output gtf file')
     parser.add_argument('-a', '--abundance', default='abundance.tab', help='Set stringtie -A parameter')
     parser.add_argument('-m', '--multi_map_frac', default='.95', help='Set stringtie -M parameter')
+    parser.add_argument('-db', '--rpstblastn_db', default='.95', help='Path to database for rpstblastn')
 
     if len(sys.argv)==1:
         parser.print_help()
