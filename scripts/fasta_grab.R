@@ -73,8 +73,8 @@ get_transcript_fa_from_gtf <- function(df){
        return(NA)
     chr = as.vector(df[,1])[1]
     tr_title=as.character(as.vector(df[1,'title']))
-    indexes1 = as.vector(df[,4])+1   # 0-base to 1-base
-    indexes2 = as.vector(df[,5])     # end index is not included
+    indexes1 = as.vector(df[,4])
+    indexes2 = as.vector(df[,5])
     genome_name = chr2genome_name[[chr]]
     
     sequences = sapply(1:nrow(df), function(idx){
